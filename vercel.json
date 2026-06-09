@@ -10,6 +10,7 @@
     { "src": "/api/billing/(.*)", "dest": "/api/billing.js" },
     { "src": "/api/webhook/(.*)", "dest": "/api/webhook.js" },
     { "src": "/api/whatsapp/(.*)", "dest": "/api/whatsapp.js" },
+    { "handle": "filesystem" },
     { "src": "/(.*)", "dest": "/index.html" }
   ]
 }
