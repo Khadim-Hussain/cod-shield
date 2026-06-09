@@ -3,11 +3,6 @@
   "buildCommand": "cd web && npm install && npm run build",
   "outputDirectory": "web/dist",
   "installCommand": "npm install",
-  "functions": {
-    "api/**/*.js": {
-      "runtime": "@vercel/node@3"
-    }
-  },
   "routes": [
     { "src": "/api/billing/(.*)", "dest": "/api/billing.js" },
     { "src": "/api/webhook/(.*)", "dest": "/api/webhook.js" },
