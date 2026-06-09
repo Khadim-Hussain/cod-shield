@@ -1,0 +1,24 @@
+name = "COD Shield"
+client_id = "b9266530c69dc56a8b4b22781549c648"
+application_url = "https://{{VERCEL_URL}}"
+embedded = true
+
+[access_scopes]
+scopes = "write_orders,read_orders,read_customers,write_customers"
+
+[auth]
+redirect_urls = ["https://{{VERCEL_URL}}/api/auth/callback"]
+
+[webhooks]
+api_version = "2024-01"
+
+  [[webhooks.subscriptions]]
+  topics = ["orders/create"]
+  uri = "/api/webhook"
+
+  [[webhooks.subscriptions]]
+  topics = ["orders/cancelled"]
+  uri = "/api/webhook/cancelled"
+
+[pos]
+embedded = false
