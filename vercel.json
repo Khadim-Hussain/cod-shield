@@ -20,6 +20,7 @@
     { "src": "/api/stats", "dest": "/api/stats.js" },
     { "src": "/api/orders", "dest": "/api/orders.js" },
     { "src": "/api/settings", "dest": "/api/settings.js" },
-    { "src": "/(.*)", "dest": "/web/dist/$1" }
+    { "handle": "filesystem" },
+    { "src": "/(.*)", "dest": "/index.html" }
   ]
 }
