@@ -1,18 +1,9 @@
 {
   "version": 2,
-  "builds": [
-    {
-      "src": "web/package.json",
-      "use": "@vercel/static-build",
-      "config": { "distDir": "dist" }
-    },
-    { "src": "api/stats.js", "use": "@vercel/node" },
-    { "src": "api/orders.js", "use": "@vercel/node" },
-    { "src": "api/settings.js", "use": "@vercel/node" },
-    { "src": "api/billing.js", "use": "@vercel/node" },
-    { "src": "api/webhook.js", "use": "@vercel/node" },
-    { "src": "api/whatsapp.js", "use": "@vercel/node" }
-  ],
+  "outputDirectory": "web/dist",
+  "buildCommand": "cd web && npm install && npm run build",
+  "installCommand": "npm install",
+  "framework": null,
   "routes": [
     { "src": "/api/stats", "dest": "/api/stats.js" },
     { "src": "/api/orders", "dest": "/api/orders.js" },
@@ -20,6 +11,6 @@
     { "src": "/api/billing/(.*)", "dest": "/api/billing.js" },
     { "src": "/api/webhook/(.*)", "dest": "/api/webhook.js" },
     { "src": "/api/whatsapp/(.*)", "dest": "/api/whatsapp.js" },
-    { "src": "/(.*)", "dest": "/web/dist/$1" }
+    { "src": "/(.*)", "dest": "/index.html" }
   ]
 }

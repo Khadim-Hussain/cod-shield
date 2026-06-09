@@ -1,10 +1,8 @@
 node_modules/
 web/node_modules/
 .env
-.env.production
 .env.local
 .vercel
-web/dist/
 *.log
 
 .vercel
