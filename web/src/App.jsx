@@ -1,6 +1,5 @@
 import { BrowserRouter, Routes, Route, useNavigate, useLocation } from "react-router-dom";
 import { AppProvider, Frame, Navigation } from "@shopify/polaris";
-import { Provider as AppBridgeProvider } from "@shopify/app-bridge-react";
 import enTranslations from "@shopify/polaris/locales/en.json";
 import "@shopify/polaris/build/esm/styles.css";
 import { HomeIcon, OrderIcon, SettingsIcon, ReceiptIcon } from "@shopify/polaris-icons";
@@ -52,12 +51,10 @@ function AppRoutes() {
 
 export default function App() {
   return (
-    <AppBridgeProvider config={config}>
-      <AppProvider i18n={enTranslations}>
-        <BrowserRouter>
-          <AppRoutes />
-        </BrowserRouter>
-      </AppProvider>
-    </AppBridgeProvider>
+    <AppProvider i18n={enTranslations}>
+      <BrowserRouter>
+        <AppRoutes />
+      </BrowserRouter>
+    </AppProvider>
   );
 }
