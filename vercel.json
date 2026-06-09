@@ -1,8 +1,18 @@
 {
   "version": 2,
-  "buildCommand": "cd web && npm install && npm run build",
-  "outputDirectory": "web/dist",
-  "installCommand": "npm install",
+  "builds": [
+    {
+      "src": "web/package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "dist"
+      }
+    },
+    {
+      "src": "api/**/*.js",
+      "use": "@vercel/node"
+    }
+  ],
   "routes": [
     { "src": "/api/billing/(.*)", "dest": "/api/billing.js" },
     { "src": "/api/webhook/(.*)", "dest": "/api/webhook.js" },
