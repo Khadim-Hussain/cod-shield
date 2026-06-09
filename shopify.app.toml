@@ -12,13 +12,5 @@ redirect_urls = ["https://cod-shield-s7k5.vercel.app/api/auth/callback"]
 [webhooks]
 api_version = "2024-01"
 
-  [[webhooks.subscriptions]]
-  topics = ["orders/create"]
-  uri = "/api/webhook"
-
-  [[webhooks.subscriptions]]
-  topics = ["orders/cancelled"]
-  uri = "/api/webhook/cancelled"
-
 [pos]
 embedded = false

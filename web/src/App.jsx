@@ -3,6 +3,7 @@ import { AppProvider, Frame, Navigation } from "@shopify/polaris";
 import enTranslations from "@shopify/polaris/locales/en.json";
 import "@shopify/polaris/build/esm/styles.css";
 import { HomeIcon, OrderIcon, SettingsIcon, ReceiptIcon } from "@shopify/polaris-icons";
+import { Provider as AppBridgeProvider } from "@shopify/app-bridge-react";
 import Dashboard from "./pages/Dashboard";
 import Orders from "./pages/Orders";
 import Settings from "./pages/Settings";
@@ -13,7 +14,7 @@ const shop = params.get("shop") || "";
 const host = params.get("host") || "";
 
 const config = {
-  apiKey: import.meta.env.VITE_SHOPIFY_API_KEY,
+  apiKey: import.meta.env.VITE_SHOPIFY_API_KEY || "b9266530c69dc56a8b4b22781549c648",
   host,
   forceRedirect: true,
 };
@@ -52,9 +53,11 @@ function AppRoutes() {
 export default function App() {
   return (
     <AppProvider i18n={enTranslations}>
-      <BrowserRouter>
-        <AppRoutes />
-      </BrowserRouter>
+      <AppBridgeProvider config={config}>
+        <BrowserRouter>
+          <AppRoutes />
+        </BrowserRouter>
+      </AppBridgeProvider>
     </AppProvider>
   );
 }
