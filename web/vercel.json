@@ -12,6 +12,7 @@
     { "source": "/api/billing/:path*", "destination": "/api/billing.js" },
     { "source": "/api/webhook", "destination": "/api/webhook.js" },
     { "source": "/api/whatsapp", "destination": "/api/whatsapp.js" },
-    { "source": "/api/whatsapp/:path*", "destination": "/api/whatsapp.js" }
+    { "source": "/api/whatsapp/:path*", "destination": "/api/whatsapp.js" },
+    { "source": "/((?!api/).*)", "destination": "/index.html" }
   ]
 }
