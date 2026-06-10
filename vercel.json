@@ -2,7 +2,7 @@
   "version": 2,
   "outputDirectory": "web/dist",
   "installCommand": "npm install && npm install --prefix web",
-  "buildCommand": "npx vite build web --outDir web/dist",
+  "buildCommand": "./web/node_modules/.bin/vite build web",
   "framework": null,
   "routes": [
     { "src": "/api/stats", "dest": "/api/stats.js" },
