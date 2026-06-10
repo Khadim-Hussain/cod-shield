@@ -2,6 +2,7 @@
   "name": "cod-shield",
   "version": "1.0.0",
   "private": true,
+  "workspaces": ["web"],
   "type": "module",
   "scripts": {
     "dev": "shopify app dev",
