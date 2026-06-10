@@ -2,8 +2,8 @@ import crypto from "crypto";
 import axios from "axios";
 
 export function verifyWebhookHmac(rawBody, hmacHeader) {
-  const secret = process.env.SHOPIFY_API_SECRET;
-  const hash = crypto.createHmac("sha256", secret).update(rawBody).digest("base64");
+  const secret = process.env.SHOPIFY_WEBHOOK_SECRET || process.env.SHOPIFY_API_SECRET;
+  const hash = crypto.createHmac("sha256", secret).update(rawBody, "utf8").digest("base64");
   return hash === hmacHeader;
 }
 
