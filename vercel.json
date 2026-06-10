@@ -1,7 +1,8 @@
 {
   "version": 2,
   "outputDirectory": "web/dist",
-  "buildCommand": "npm install --prefix web && npm run build --prefix web",
+  "installCommand": "npm install && cd web && npm install",
+  "buildCommand": "cd web && npm run build",
   "framework": null,
   "routes": [
     { "src": "/api/stats", "dest": "/api/stats.js" },
