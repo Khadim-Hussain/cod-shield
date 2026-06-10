@@ -4,12 +4,12 @@
   "outputDirectory": "dist",
   "framework": "vite",
   "routes": [
-    { "src": "/api/stats", "dest": "/api/stats.js" },
-    { "src": "/api/orders", "dest": "/api/orders.js" },
-    { "src": "/api/settings", "dest": "/api/settings.js" },
-    { "src": "/api/billing/(.*)", "dest": "/api/billing.js?path=$1" },
-    { "src": "/api/webhook/(.*)", "dest": "/api/webhook.js" },
-    { "src": "/api/whatsapp/(.*)", "dest": "/api/whatsapp.js" },
+    { "src": "/api/stats", "dest": "../api/stats.js" },
+    { "src": "/api/orders", "dest": "../api/orders.js" },
+    { "src": "/api/settings", "dest": "../api/settings.js" },
+    { "src": "/api/billing/(.*)", "dest": "../api/billing.js?path=$1" },
+    { "src": "/api/webhook/(.*)", "dest": "../api/webhook.js" },
+    { "src": "/api/whatsapp/(.*)", "dest": "../api/whatsapp.js" },
     { "handle": "filesystem" },
     { "src": "/(.*)", "dest": "/index.html" }
   ]
