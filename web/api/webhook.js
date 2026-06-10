@@ -18,6 +18,9 @@ export default async function handler(req, res) {
 
   try {
     const order = req.body;
+    console.log("Webhook topic:", topic, "shop:", shop);
+    console.log("Order id:", order.id, "phone:", order.phone, "billing phone:", order.billing_address?.phone);
+
     if (topic === "orders/cancelled") {
       const phone = order.phone || order.billing_address?.phone;
       if (phone) await incrementCancelCount(phone);
