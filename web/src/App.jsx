@@ -9,7 +9,9 @@ import Settings from "./pages/Settings";
 import Billing from "./pages/Billing";
 
 const params = new URLSearchParams(window.location.search);
-const shop = params.get("shop") || "";
+const shopFromUrl = params.get("shop");
+if (shopFromUrl) localStorage.setItem("cod_shop", shopFromUrl);
+const shop = shopFromUrl || localStorage.getItem("cod_shop") || "";
 const host = params.get("host") || "";
 
 function AppNavigation() {

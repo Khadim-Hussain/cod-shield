@@ -8,10 +8,10 @@ export const PLANS = {
 };
 
 export default async function handler(req, res) {
-  const { pathname } = new URL(req.url, `https://${req.headers.host}`);
+  const url = req.url || req.query.path || "";
 
   // GET /api/billing/status
-  if (req.method === "GET" && pathname.endsWith("/status")) {
+  if (req.method === "GET" && url.includes("/status")) {
     const shop = req.query.shop;
     if (!shop) return res.status(400).json({ error: "Missing shop" });
     const plan = await getPlan(shop);
@@ -19,7 +19,7 @@ export default async function handler(req, res) {
   }
 
   // POST /api/billing/subscribe
-  if (req.method === "POST" && pathname.endsWith("/subscribe")) {
+  if (req.method === "POST" && url.includes("/subscribe")) {
     const { shop, planName } = req.body;
     if (!shop || !planName) return res.status(400).json({ error: "Missing shop or planName" });
 
@@ -67,7 +67,7 @@ export default async function handler(req, res) {
   }
 
   // GET /api/billing/callback
-  if (req.method === "GET" && pathname.endsWith("/callback")) {
+  if (req.method === "GET" && url.includes("/callback")) {
     const { shop, plan: planName, charge_id } = req.query;
     if (shop && planName) {
       await savePlan(shop, { ...PLANS[planName], chargeId: charge_id });
