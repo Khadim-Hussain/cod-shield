@@ -27,7 +27,8 @@ export default async function handler(req, res) {
       return;
     }
 
-    const { id, order_number, total_price, phone, shipping_address, created_at, customer } = order;
+    const { id, order_number, total_price, shipping_address, created_at, customer } = order;
+    const phone = order.phone || order.billing_address?.phone || order.shipping_address?.phone;
     if (!phone) return;
 
     const address = `${shipping_address?.address1} ${shipping_address?.city}`;
