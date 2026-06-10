@@ -56,13 +56,17 @@ export async function updateAddressHistory(address, phone) {
   } catch (e) {}
 }
 
-export async function saveOrderResult(orderId, result) {
+export async function saveOrderResult(orderId, result, shop) {
   try {
     await redis.set(`cod:order:${orderId}`, JSON.stringify({
       ...result,
       status: result.level === "safe" ? "safe" : "pending",
       createdAt: new Date().toISOString(),
     }), { ex: TTL_30_DAYS });
+    if (shop) {
+      await redis.lpush(`cod:orderindex:${shop}`, String(orderId));
+      await redis.expire(`cod:orderindex:${shop}`, TTL_30_DAYS);
+    }
   } catch (e) {}
 }
 

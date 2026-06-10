@@ -37,7 +37,7 @@ export default async function handler(req, res) {
     );
 
     await Promise.all([
-      saveOrderResult(id, { score, level, reasons, orderNumber: order_number, phone, total_price }),
+      saveOrderResult(id, { score, level, reasons, orderNumber: order_number, phone, total_price }, shop),
       updatePhoneHistory(phone, order, score),
       updateAddressHistory(address, phone),
     ]);
