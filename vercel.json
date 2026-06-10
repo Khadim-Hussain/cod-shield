@@ -1,8 +1,8 @@
 {
   "version": 2,
   "outputDirectory": "web/dist",
-  "installCommand": "npm install && node -e \"require('child_process').execSync('npm install', {cwd: 'web', stdio: 'inherit'})\"",
-  "buildCommand": "node -e \"require('child_process').execSync('npm run build', {cwd: 'web', stdio: 'inherit'})\"",
+  "installCommand": "npm install && npm install --prefix web",
+  "buildCommand": "npx vite build web --outDir web/dist",
   "framework": null,
   "routes": [
     { "src": "/api/stats", "dest": "/api/stats.js" },
