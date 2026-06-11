@@ -14,8 +14,6 @@ export default async function handler(req, res) {
   // TODO: re-enable HMAC after testing
   // if (!verifyWebhookHmac(rawBody, hmac)) return res.status(401).json({ error: "Unauthorized" });
 
-  res.status(200).json({ received: true });
-
   try {
     const order = req.body;
     console.log("Webhook topic:", topic, "shop:", shop);
@@ -24,12 +22,12 @@ export default async function handler(req, res) {
     if (topic === "orders/cancelled") {
       const phone = order.phone || order.billing_address?.phone;
       if (phone) await incrementCancelCount(phone);
-      return;
+      return res.status(200).json({ received: true });
     }
 
     const { id, order_number, total_price, shipping_address, created_at, customer } = order;
     const phone = order.phone || order.billing_address?.phone || order.shipping_address?.phone;
-    if (!phone) return;
+    if (!phone) return res.status(200).json({ received: true, skipped: "no phone" });
 
     const address = `${shipping_address?.address1} ${shipping_address?.city}`;
     const [phoneHistory, addressHistory, settings] = await Promise.all([
@@ -39,6 +37,8 @@ export default async function handler(req, res) {
     const { score, level, reasons } = calculateFraudScore(
       { total_price, phone, shipping_address, created_at, customer }, phoneHistory, addressHistory
     );
+
+    console.log("Fraud score:", score, "level:", level);
 
     await Promise.all([
       saveOrderResult(id, { score, level, reasons, orderNumber: order_number, phone, total_price }, shop),
@@ -65,7 +65,10 @@ export default async function handler(req, res) {
         action: settings.autoCancel !== false ? "Auto-cancelled" : "Manual review needed",
       });
     }
+
+    return res.status(200).json({ received: true });
   } catch (err) {
     console.error("Webhook processing error:", err);
+    return res.status(200).json({ received: true });
   }
 }
