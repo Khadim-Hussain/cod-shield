@@ -15,7 +15,7 @@ function shopifyHeaders(accessToken) {
 
 export async function cancelOrder(shop, accessToken, orderId, reason = "fraud") {
   await axios.post(
-    `https://${shop}/admin/api/2024-01/orders/${orderId}/cancel.json`,
+    `https://${shop}/admin/api/2025-07/orders/${orderId}/cancel.json`,
     { reason },
     { headers: shopifyHeaders(accessToken) }
   );
@@ -23,13 +23,13 @@ export async function cancelOrder(shop, accessToken, orderId, reason = "fraud") 
 
 export async function fulfillOrder(shop, accessToken, orderId) {
   const { data } = await axios.get(
-    `https://${shop}/admin/api/2024-01/orders/${orderId}/fulfillment_orders.json`,
+    `https://${shop}/admin/api/2025-07/orders/${orderId}/fulfillment_orders.json`,
     { headers: shopifyHeaders(accessToken) }
   );
   const fulfillmentOrderId = data.fulfillment_orders?.[0]?.id;
   if (!fulfillmentOrderId) return;
   await axios.post(
-    `https://${shop}/admin/api/2024-01/fulfillments.json`,
+    `https://${shop}/admin/api/2025-07/fulfillments.json`,
     { fulfillment: { line_items_by_fulfillment_order: [{ fulfillment_order_id: fulfillmentOrderId }] } },
     { headers: shopifyHeaders(accessToken) }
   );

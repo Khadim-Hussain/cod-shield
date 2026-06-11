@@ -36,7 +36,7 @@ export default async function handler(req, res) {
       }
     `;
     const { data } = await axios.post(
-      `https://${shop}/admin/api/2024-01/graphql.json`,
+      `https://${shop}/admin/api/2025-07/graphql.json`,
       { query: mutation, variables: { name: plan.name, price: plan.price, returnUrl: `${process.env.SHOPIFY_APP_URL}/api/billing/callback?shop=${shop}&plan=${planName}`, trialDays: plan.trialDays } },
       { headers: { "X-Shopify-Access-Token": accessToken, "Content-Type": "application/json" } }
     );
