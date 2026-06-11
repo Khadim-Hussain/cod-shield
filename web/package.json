@@ -3,7 +3,9 @@
   "private": true,
   "version": "1.0.0",
   "type": "module",
-  "engines": { "node": ">=18" },
+  "engines": {
+    "node": ">=18"
+  },
   "scripts": {
     "dev": "vite",
     "build": "vite build",
@@ -14,12 +16,20 @@
     "@shopify/app-bridge-react": "^4.1.6",
     "@shopify/polaris": "^13.3.0",
     "@upstash/redis": "^1.34.0",
+    "@vitejs/plugin-react": "^4.2.0",
     "axios": "^1.6.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.22.0",
-    "@vitejs/plugin-react": "^4.2.0",
+    "recharts": "^3.8.1",
     "vite": "^5.0.0"
   },
-  "devDependencies": {}
+  "description": "",
+  "main": "vite.config.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
 }
