@@ -1,26 +1,29 @@
 import { useEffect, useState } from "react";
-import { Spinner } from "@shopify/polaris";
+import {
+  Package, AlertTriangle, BadgeDollarSign, CheckCircle2,
+  TrendingUp, PieChart as PieIcon, BarChart3, CalendarDays,
+} from "lucide-react";
 import {
   AreaChart, Area, BarChart, Bar, PieChart, Pie, Cell,
   XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
 } from "recharts";
 
-// ─── Theme ───────────────────────────────────────────────────────────────────
 const T = {
-  primary:   "#6366f1",   // indigo
-  success:   "#10b981",   // emerald
-  danger:    "#f43f5e",   // rose
-  warning:   "#f59e0b",   // amber
-  dark:      "#0f172a",
-  card:      "#1e293b",
-  border:    "#334155",
-  muted:     "#94a3b8",
-  text:      "#f1f5f9",
-  subtext:   "#cbd5e1",
-  bg:        "#0f172a",
+  bg:      "#060d1a",
+  card:    "#0d1526",
+  cardAlt: "#111827",
+  border:  "#1e2d45",
+  primary: "#3b82f6",
+  blue2:   "#60a5fa",
+  success: "#22c55e",
+  danger:  "#ef4444",
+  warning: "#f59e0b",
+  purple:  "#a78bfa",
+  text:    "#f1f5f9",
+  sub:     "#94a3b8",
+  muted:   "#475569",
 };
 
-// ─── Mock realistic 7-day data ───────────────────────────────────────────────
 function generateMockStats() {
   const base = [
     { orders: 42, fraud: 8,  saved: 34500, confirmed: 30, cancelled: 8  },
@@ -36,52 +39,61 @@ function generateMockStats() {
     date.setDate(date.getDate() - (6 - i));
     return {
       date: date.toISOString().split("T")[0],
-      label: date.toLocaleDateString("en-PK", { weekday: "short", month: "short", day: "numeric" }),
-      totalOrders: d.orders,
-      fraudCaught: d.fraud,
-      moneySaved: d.saved,
-      autoConfirmed: d.confirmed,
-      autoCancelled: d.cancelled,
-      safe: d.orders - d.fraud,
+      label: date.toLocaleDateString("en-PK", { weekday: "short", day: "numeric" }),
+      totalOrders: d.orders, fraudCaught: d.fraud,
+      moneySaved: d.saved, autoConfirmed: d.confirmed,
+      autoCancelled: d.cancelled, safe: d.orders - d.fraud,
     };
   });
 }
 
-// ─── Sub-components ──────────────────────────────────────────────────────────
-function StatCard({ icon, label, value, sub, color }) {
+function StatCard({ Icon, iconColor, iconBg, label, value, sub }) {
   return (
     <div style={{
-      background: T.card, borderRadius: "14px", padding: "22px 24px",
+      background: T.card, borderRadius: "16px", padding: "22px 24px",
       border: `1px solid ${T.border}`, flex: 1,
-      borderLeft: `4px solid ${color}`,
+      transition: "border-color 0.2s",
     }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
         <div>
-          <p style={{ margin: 0, fontSize: "12px", color: T.muted, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.05em" }}>{label}</p>
-          <p style={{ margin: "8px 0 4px", fontSize: "28px", fontWeight: 800, color: T.text }}>{value}</p>
-          {sub && <p style={{ margin: 0, fontSize: "12px", color: T.muted }}>{sub}</p>}
+          <p style={{ margin: "0 0 14px", fontSize: "12px", color: T.muted, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.08em" }}>{label}</p>
+          <p style={{ margin: "0 0 6px", fontSize: "26px", fontWeight: 800, color: T.text, letterSpacing: "-0.02em" }}>{value}</p>
+          {sub && <p style={{ margin: 0, fontSize: "12px", color: T.sub }}>{sub}</p>}
         </div>
-        <span style={{ fontSize: "28px", opacity: 0.8 }}>{icon}</span>
+        <div style={{ width: 44, height: 44, borderRadius: "12px", background: iconBg, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+          <Icon size={20} color={iconColor} strokeWidth={2} />
+        </div>
       </div>
     </div>
   );
 }
 
-const CustomTooltip = ({ active, payload, label }) => {
+function ChartCard({ Icon, title, children }) {
+  return (
+    <div style={{ background: T.card, borderRadius: "16px", padding: "22px 24px", border: `1px solid ${T.border}` }}>
+      <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "20px" }}>
+        <Icon size={16} color={T.primary} strokeWidth={2} />
+        <p style={{ margin: 0, fontWeight: 700, fontSize: "14px", color: T.text }}>{title}</p>
+      </div>
+      {children}
+    </div>
+  );
+}
+
+const Tip = ({ active, payload, label }) => {
   if (!active || !payload?.length) return null;
   return (
-    <div style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: "10px", padding: "12px 16px" }}>
-      <p style={{ margin: "0 0 8px", fontWeight: 700, color: T.text, fontSize: "13px" }}>{label}</p>
+    <div style={{ background: "#0d1e35", border: `1px solid ${T.border}`, borderRadius: "10px", padding: "12px 16px" }}>
+      <p style={{ margin: "0 0 8px", fontWeight: 700, color: T.text, fontSize: "12px" }}>{label}</p>
       {payload.map((p) => (
         <p key={p.name} style={{ margin: "3px 0", fontSize: "12px", color: p.color }}>
-          {p.name}: <strong>{p.name === "Money Saved" ? `Rs ${p.value.toLocaleString()}` : p.value}</strong>
+          {p.name}: <strong>{p.name === "Money Saved" ? `Rs ${Number(p.value).toLocaleString()}` : p.value}</strong>
         </p>
       ))}
     </div>
   );
 };
 
-// ─── Main Dashboard ───────────────────────────────────────────────────────────
 export default function Dashboard({ shop }) {
   const [stats, setStats] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -94,9 +106,9 @@ export default function Dashboard({ shop }) {
         const live = d.stats || [];
         const hasData = live.some((s) => s.totalOrders > 0);
         if (hasData) {
-          setStats(live.map((s, i) => ({
+          setStats(live.map((s) => ({
             ...s,
-            label: new Date(s.date).toLocaleDateString("en-PK", { weekday: "short", month: "short", day: "numeric" }),
+            label: new Date(s.date).toLocaleDateString("en-PK", { weekday: "short", day: "numeric" }),
             safe: (s.totalOrders || 0) - (s.fraudCaught || 0),
           })).reverse());
         } else {
@@ -108,153 +120,149 @@ export default function Dashboard({ shop }) {
       .catch(() => { setStats(generateMockStats()); setUsingMock(true); setLoading(false); });
   }, [shop]);
 
-  const today = stats[stats.length - 1] || {};
-  const totalWeekOrders = stats.reduce((a, s) => a + (s.totalOrders || 0), 0);
-  const totalWeekFraud  = stats.reduce((a, s) => a + (s.fraudCaught || 0), 0);
-  const totalWeekSaved  = stats.reduce((a, s) => a + (s.moneySaved || 0), 0);
-  const fraudRate = totalWeekOrders ? Math.round((totalWeekFraud / totalWeekOrders) * 100) : 0;
+  const totalOrders = stats.reduce((a, s) => a + (s.totalOrders || 0), 0);
+  const totalFraud  = stats.reduce((a, s) => a + (s.fraudCaught || 0), 0);
+  const totalSaved  = stats.reduce((a, s) => a + (s.moneySaved || 0), 0);
+  const totalConf   = stats.reduce((a, s) => a + (s.autoConfirmed || 0), 0);
+  const fraudRate   = totalOrders ? Math.round((totalFraud / totalOrders) * 100) : 0;
+  const today       = stats[stats.length - 1] || {};
 
   const pieData = [
-    { name: "Safe",      value: totalWeekOrders - totalWeekFraud, color: T.success },
-    { name: "Fraud",     value: totalWeekFraud,                   color: T.danger  },
+    { name: "Safe",  value: totalOrders - totalFraud, color: T.success },
+    { name: "Fraud", value: totalFraud,               color: T.danger  },
   ];
 
   if (loading) return (
-    <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "70vh", background: T.bg }}>
-      <Spinner size="large" />
+    <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh", background: T.bg }}>
+      <div style={{ width: 36, height: 36, border: `3px solid ${T.border}`, borderTop: `3px solid ${T.primary}`, borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />
+      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
     </div>
   );
 
   return (
-    <div style={{ background: T.bg, minHeight: "100vh", padding: "24px", color: T.text, fontFamily: "Inter, system-ui, sans-serif" }}>
+    <div style={{ background: T.bg, minHeight: "100vh", padding: "28px 28px 40px", color: T.text, fontFamily: "'Inter', 'Segoe UI', system-ui, sans-serif" }}>
 
-      {/* ── Header ── */}
-      <div style={{
-        background: "linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #0f172a 100%)",
-        borderRadius: "16px", padding: "28px 32px", marginBottom: "24px",
-        border: "1px solid #4f46e5", position: "relative", overflow: "hidden",
-      }}>
-        <div style={{ position: "absolute", top: -30, right: -30, width: 200, height: 200, borderRadius: "50%", background: "rgba(255,255,255,0.03)" }} />
-        <div style={{ position: "absolute", bottom: -50, right: 80, width: 150, height: 150, borderRadius: "50%", background: "rgba(255,255,255,0.04)" }} />
-        <div style={{ position: "relative" }}>
-          <h1 style={{ margin: 0, fontSize: "24px", fontWeight: 800, color: "#fff" }}>🛡️ COD Shield Dashboard</h1>
-          <p style={{ margin: "6px 0 0", color: "rgba(255,255,255,0.7)", fontSize: "14px" }}>
-            Real-time fraud detection · Pakistani COD stores
-          </p>
+      {/* Header */}
+      <div style={{ marginBottom: "28px" }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+          <div>
+            <h1 style={{ margin: 0, fontSize: "22px", fontWeight: 800, color: T.text, letterSpacing: "-0.03em" }}>Dashboard</h1>
+            <p style={{ margin: "4px 0 0", fontSize: "13px", color: T.sub }}>
+              {new Date().toLocaleDateString("en-PK", { weekday: "long", year: "numeric", month: "long", day: "numeric" })}
+            </p>
+          </div>
           {usingMock && (
-            <span style={{ display: "inline-block", marginTop: "10px", background: "rgba(245,158,11,0.2)", color: "#fbbf24", border: "1px solid #f59e0b", borderRadius: "20px", padding: "3px 12px", fontSize: "11px", fontWeight: 600 }}>
-              📊 Sample data shown — connect your store to see real stats
-            </span>
+            <div style={{ display: "flex", alignItems: "center", gap: "7px", background: "rgba(245,158,11,0.1)", border: "1px solid rgba(245,158,11,0.3)", borderRadius: "8px", padding: "7px 14px" }}>
+              <AlertTriangle size={13} color={T.warning} />
+              <span style={{ fontSize: "12px", color: T.warning, fontWeight: 600 }}>Sample data — connect your store</span>
+            </div>
           )}
         </div>
       </div>
 
-      {/* ── Stat Cards ── */}
-      <div style={{ display: "flex", gap: "16px", marginBottom: "24px", flexWrap: "wrap" }}>
-        <StatCard icon="📦" label="This Week Orders" value={totalWeekOrders} sub={`Today: ${today.totalOrders || 0}`} color={T.primary} />
-        <StatCard icon="🚨" label="Fraud Caught" value={totalWeekFraud} sub={`${fraudRate}% fraud rate`} color={T.danger} />
-        <StatCard icon="💰" label="Money Saved" value={`Rs ${totalWeekSaved.toLocaleString()}`} sub="Last 7 days" color={T.success} />
-        <StatCard icon="✅" label="Auto-Confirmed" value={stats.reduce((a, s) => a + (s.autoConfirmed || 0), 0)} sub="Safe orders" color={T.warning} />
+      {/* Stat Cards */}
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "16px", marginBottom: "24px" }}>
+        <StatCard Icon={Package}          iconColor={T.primary} iconBg="rgba(59,130,246,0.12)"  label="Weekly Orders"  value={totalOrders}                         sub={`Today: ${today.totalOrders || 0}`} />
+        <StatCard Icon={AlertTriangle}    iconColor={T.danger}  iconBg="rgba(239,68,68,0.12)"   label="Fraud Caught"   value={totalFraud}                          sub={`${fraudRate}% fraud rate`} />
+        <StatCard Icon={BadgeDollarSign}  iconColor={T.success} iconBg="rgba(34,197,94,0.12)"   label="Money Saved"    value={`Rs ${totalSaved.toLocaleString()}`}  sub="Last 7 days" />
+        <StatCard Icon={CheckCircle2}     iconColor={T.purple}  iconBg="rgba(167,139,250,0.12)" label="Auto-Confirmed" value={totalConf}                            sub="Safe orders" />
       </div>
 
-      {/* ── Charts Row 1 ── */}
-      <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: "20px", marginBottom: "20px" }}>
-
-        {/* Area Chart — Orders vs Fraud */}
-        <div style={{ background: T.card, borderRadius: "14px", padding: "24px", border: `1px solid ${T.border}` }}>
-          <p style={{ margin: "0 0 20px", fontWeight: 700, fontSize: "15px", color: T.text }}>📈 Orders vs Fraud — Last 7 Days</p>
-          <ResponsiveContainer width="100%" height={220}>
+      {/* Charts Row 1 */}
+      <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: "16px", marginBottom: "16px" }}>
+        <ChartCard Icon={TrendingUp} title="Orders vs Fraud — Last 7 Days">
+          <ResponsiveContainer width="100%" height={230}>
             <AreaChart data={stats}>
               <defs>
-                <linearGradient id="ordersGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor={T.primary} stopOpacity={0.3} />
-                  <stop offset="95%" stopColor={T.primary} stopOpacity={0} />
+                <linearGradient id="gOrders" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%"   stopColor={T.primary} stopOpacity={0.25} />
+                  <stop offset="100%" stopColor={T.primary} stopOpacity={0} />
                 </linearGradient>
-                <linearGradient id="fraudGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor={T.danger} stopOpacity={0.3} />
-                  <stop offset="95%" stopColor={T.danger} stopOpacity={0} />
+                <linearGradient id="gFraud" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%"   stopColor={T.danger} stopOpacity={0.2} />
+                  <stop offset="100%" stopColor={T.danger} stopOpacity={0} />
                 </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" stroke={T.border} />
               <XAxis dataKey="label" tick={{ fill: T.muted, fontSize: 11 }} axisLine={false} tickLine={false} />
               <YAxis tick={{ fill: T.muted, fontSize: 11 }} axisLine={false} tickLine={false} />
-              <Tooltip content={<CustomTooltip />} />
-              <Legend wrapperStyle={{ color: T.muted, fontSize: "12px" }} />
-              <Area type="monotone" dataKey="totalOrders" name="Total Orders" stroke={T.primary} fill="url(#ordersGrad)" strokeWidth={2.5} dot={{ fill: T.primary, r: 4 }} />
-              <Area type="monotone" dataKey="fraudCaught"  name="Fraud Caught"  stroke={T.danger}  fill="url(#fraudGrad)"  strokeWidth={2.5} dot={{ fill: T.danger, r: 4 }} />
+              <Tooltip content={<Tip />} />
+              <Legend wrapperStyle={{ fontSize: "12px", color: T.sub, paddingTop: "10px" }} />
+              <Area type="monotone" dataKey="totalOrders" name="Total Orders" stroke={T.primary} fill="url(#gOrders)" strokeWidth={2.5} dot={{ fill: T.primary, r: 3, strokeWidth: 0 }} activeDot={{ r: 5 }} />
+              <Area type="monotone" dataKey="fraudCaught"  name="Fraud Caught" stroke={T.danger}  fill="url(#gFraud)"  strokeWidth={2.5} dot={{ fill: T.danger,  r: 3, strokeWidth: 0 }} activeDot={{ r: 5 }} />
             </AreaChart>
           </ResponsiveContainer>
-        </div>
+        </ChartCard>
 
-        {/* Pie Chart — Safe vs Fraud */}
-        <div style={{ background: T.card, borderRadius: "14px", padding: "24px", border: `1px solid ${T.border}` }}>
-          <p style={{ margin: "0 0 12px", fontWeight: 700, fontSize: "15px", color: T.text }}>🥧 Order Risk Split</p>
-          <ResponsiveContainer width="100%" height={200}>
+        <ChartCard Icon={PieIcon} title="Order Risk Distribution">
+          <ResponsiveContainer width="100%" height={180}>
             <PieChart>
-              <Pie data={pieData} cx="50%" cy="50%" innerRadius={55} outerRadius={80} paddingAngle={4} dataKey="value">
-                {pieData.map((entry, i) => (
-                  <Cell key={i} fill={entry.color} />
-                ))}
+              <Pie data={pieData} cx="50%" cy="50%" innerRadius={52} outerRadius={78} paddingAngle={3} dataKey="value" strokeWidth={0}>
+                {pieData.map((e, i) => <Cell key={i} fill={e.color} />)}
               </Pie>
-              <Tooltip formatter={(v, n) => [v, n]} contentStyle={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: "8px", color: T.text }} />
+              <Tooltip contentStyle={{ background: "#0d1e35", border: `1px solid ${T.border}`, borderRadius: "8px", color: T.text, fontSize: "12px" }} />
             </PieChart>
           </ResponsiveContainer>
-          <div style={{ display: "flex", justifyContent: "center", gap: "20px", marginTop: "8px" }}>
+          <div style={{ display: "flex", justifyContent: "center", gap: "24px", marginTop: "4px" }}>
             {pieData.map((d) => (
-              <div key={d.name} style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-                <div style={{ width: 10, height: 10, borderRadius: "50%", background: d.color }} />
-                <span style={{ fontSize: "12px", color: T.muted }}>{d.name}: <strong style={{ color: T.text }}>{d.value}</strong></span>
+              <div key={d.name} style={{ display: "flex", alignItems: "center", gap: "7px" }}>
+                <div style={{ width: 8, height: 8, borderRadius: "50%", background: d.color }} />
+                <span style={{ fontSize: "12px", color: T.sub }}>{d.name} <strong style={{ color: T.text }}>{d.value}</strong></span>
               </div>
             ))}
           </div>
-        </div>
+          <div style={{ textAlign: "center", marginTop: "14px" }}>
+            <span style={{ fontSize: "28px", fontWeight: 800, color: fraudRate > 20 ? T.danger : T.success }}>{fraudRate}%</span>
+            <p style={{ margin: "2px 0 0", fontSize: "11px", color: T.muted }}>Fraud Rate</p>
+          </div>
+        </ChartCard>
       </div>
 
-      {/* ── Charts Row 2 ── */}
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px", marginBottom: "20px" }}>
-
-        {/* Bar Chart — Money Saved */}
-        <div style={{ background: T.card, borderRadius: "14px", padding: "24px", border: `1px solid ${T.border}` }}>
-          <p style={{ margin: "0 0 20px", fontWeight: 700, fontSize: "15px", color: T.text }}>💰 Money Saved per Day (Rs)</p>
+      {/* Charts Row 2 */}
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px", marginBottom: "16px" }}>
+        <ChartCard Icon={BarChart3} title="Money Saved per Day (Rs)">
           <ResponsiveContainer width="100%" height={200}>
-            <BarChart data={stats}>
+            <BarChart data={stats} barSize={24}>
               <CartesianGrid strokeDasharray="3 3" stroke={T.border} />
               <XAxis dataKey="label" tick={{ fill: T.muted, fontSize: 11 }} axisLine={false} tickLine={false} />
               <YAxis tick={{ fill: T.muted, fontSize: 11 }} axisLine={false} tickLine={false} tickFormatter={(v) => `${(v/1000).toFixed(0)}k`} />
-              <Tooltip content={<CustomTooltip />} />
-              <Bar dataKey="moneySaved" name="Money Saved" fill={T.success} radius={[6, 6, 0, 0]} />
+              <Tooltip content={<Tip />} />
+              <Bar dataKey="moneySaved" name="Money Saved" fill={T.success} radius={[5, 5, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
-        </div>
+        </ChartCard>
 
-        {/* Bar Chart — Confirmed vs Cancelled */}
-        <div style={{ background: T.card, borderRadius: "14px", padding: "24px", border: `1px solid ${T.border}` }}>
-          <p style={{ margin: "0 0 20px", fontWeight: 700, fontSize: "15px", color: T.text }}>✅ Confirmed vs ❌ Cancelled</p>
+        <ChartCard Icon={BarChart3} title="Confirmed vs Cancelled Orders">
           <ResponsiveContainer width="100%" height={200}>
-            <BarChart data={stats}>
+            <BarChart data={stats} barSize={20}>
               <CartesianGrid strokeDasharray="3 3" stroke={T.border} />
               <XAxis dataKey="label" tick={{ fill: T.muted, fontSize: 11 }} axisLine={false} tickLine={false} />
               <YAxis tick={{ fill: T.muted, fontSize: 11 }} axisLine={false} tickLine={false} />
-              <Tooltip content={<CustomTooltip />} />
-              <Legend wrapperStyle={{ color: T.muted, fontSize: "12px" }} />
-              <Bar dataKey="autoConfirmed" name="Confirmed" fill={T.success}  radius={[6, 6, 0, 0]} />
-              <Bar dataKey="autoCancelled" name="Cancelled" fill={T.danger}   radius={[6, 6, 0, 0]} />
+              <Tooltip content={<Tip />} />
+              <Legend wrapperStyle={{ fontSize: "12px", color: T.sub }} />
+              <Bar dataKey="autoConfirmed" name="Confirmed" fill={T.success} radius={[5, 5, 0, 0]} />
+              <Bar dataKey="autoCancelled" name="Cancelled" fill={T.danger}  radius={[5, 5, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
-        </div>
+        </ChartCard>
       </div>
 
-      {/* ── Last 7 Days Table ── */}
-      <div style={{ background: T.card, borderRadius: "14px", border: `1px solid ${T.border}`, overflow: "hidden" }}>
-        <div style={{ padding: "18px 24px", borderBottom: `1px solid ${T.border}`, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <p style={{ margin: 0, fontWeight: 700, fontSize: "15px", color: T.text }}>📅 Last 7 Days — Detailed Breakdown</p>
-          <span style={{ fontSize: "12px", color: T.muted }}>{usingMock ? "Sample data" : "Live data"}</span>
+      {/* Table */}
+      <div style={{ background: T.card, borderRadius: "16px", border: `1px solid ${T.border}`, overflow: "hidden" }}>
+        <div style={{ padding: "18px 24px", borderBottom: `1px solid ${T.border}`, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+            <CalendarDays size={16} color={T.primary} strokeWidth={2} />
+            <p style={{ margin: 0, fontWeight: 700, fontSize: "14px", color: T.text }}>Last 7 Days — Detailed Breakdown</p>
+          </div>
+          <span style={{ fontSize: "11px", color: T.muted, background: T.cardAlt, padding: "3px 10px", borderRadius: "6px", border: `1px solid ${T.border}` }}>
+            {usingMock ? "Sample data" : "Live data"}
+          </span>
         </div>
         <table style={{ width: "100%", borderCollapse: "collapse" }}>
           <thead>
-            <tr style={{ background: "#162032" }}>
-              {["Date", "Total Orders", "Fraud Caught", "Money Saved", "Confirmed", "Cancelled", "Fraud %"].map((h) => (
-                <th key={h} style={{ padding: "10px 20px", textAlign: "left", fontSize: "11px", fontWeight: 700, color: T.muted, textTransform: "uppercase", letterSpacing: "0.05em", borderBottom: `1px solid ${T.border}` }}>{h}</th>
+            <tr style={{ background: "#0a1220" }}>
+              {["Date", "Total Orders", "Fraud Caught", "Money Saved", "Confirmed", "Cancelled", "Fraud Rate"].map((h) => (
+                <th key={h} style={{ padding: "10px 20px", textAlign: "left", fontSize: "11px", fontWeight: 700, color: T.muted, textTransform: "uppercase", letterSpacing: "0.08em", borderBottom: `1px solid ${T.border}` }}>{h}</th>
               ))}
             </tr>
           </thead>
@@ -262,23 +270,23 @@ export default function Dashboard({ shop }) {
             {[...stats].reverse().map((s, i) => {
               const rate = s.totalOrders ? Math.round((s.fraudCaught / s.totalOrders) * 100) : 0;
               return (
-                <tr key={i} style={{ borderBottom: `1px solid ${T.border}`, transition: "background 0.15s" }}
-                  onMouseEnter={(e) => e.currentTarget.style.background = "#1e2d42"}
+                <tr key={i} style={{ borderBottom: `1px solid ${T.border}`, transition: "background 0.12s" }}
+                  onMouseEnter={(e) => e.currentTarget.style.background = "#0f1c2e"}
                   onMouseLeave={(e) => e.currentTarget.style.background = ""}>
-                  <td style={{ padding: "13px 20px", fontWeight: 600, color: T.subtext, fontSize: "13px" }}>{s.label || s.date}</td>
-                  <td style={{ padding: "13px 20px", color: T.primary, fontWeight: 700 }}>{s.totalOrders}</td>
+                  <td style={{ padding: "13px 20px", fontWeight: 600, color: T.sub, fontSize: "13px" }}>{s.label || s.date}</td>
+                  <td style={{ padding: "13px 20px", color: T.blue2, fontWeight: 700 }}>{s.totalOrders}</td>
                   <td style={{ padding: "13px 20px" }}>
-                    <span style={{ background: s.fraudCaught > 0 ? "rgba(244,63,94,0.15)" : "rgba(16,185,129,0.15)", color: s.fraudCaught > 0 ? "#f43f5e" : T.success, borderRadius: "20px", padding: "2px 10px", fontSize: "12px", fontWeight: 700 }}>
+                    <span style={{ background: s.fraudCaught > 0 ? "rgba(239,68,68,0.12)" : "rgba(34,197,94,0.12)", color: s.fraudCaught > 0 ? T.danger : T.success, borderRadius: "6px", padding: "3px 10px", fontSize: "12px", fontWeight: 700 }}>
                       {s.fraudCaught}
                     </span>
                   </td>
                   <td style={{ padding: "13px 20px", color: T.success, fontWeight: 700 }}>Rs {(s.moneySaved || 0).toLocaleString()}</td>
-                  <td style={{ padding: "13px 20px", color: T.success }}>{s.autoConfirmed}</td>
-                  <td style={{ padding: "13px 20px", color: T.danger }}>{s.autoCancelled}</td>
+                  <td style={{ padding: "13px 20px", color: T.success, fontWeight: 600 }}>{s.autoConfirmed}</td>
+                  <td style={{ padding: "13px 20px", color: T.danger,  fontWeight: 600 }}>{s.autoCancelled}</td>
                   <td style={{ padding: "13px 20px" }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                      <div style={{ width: "50px", height: "6px", background: T.border, borderRadius: "4px", overflow: "hidden" }}>
-                        <div style={{ width: `${rate}%`, height: "100%", background: rate > 20 ? T.danger : T.success, borderRadius: "4px" }} />
+                    <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                      <div style={{ width: "56px", height: "5px", background: T.border, borderRadius: "4px", overflow: "hidden" }}>
+                        <div style={{ width: `${rate}%`, height: "100%", background: rate > 20 ? T.danger : T.success }} />
                       </div>
                       <span style={{ fontSize: "12px", fontWeight: 700, color: rate > 20 ? T.danger : T.success }}>{rate}%</span>
                     </div>
